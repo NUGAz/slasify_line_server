@@ -1,0 +1,11 @@
+services:
+  line-server:
+    build: .
+    container_name: line_server_app
+    ports:
+      - "8000:8000"
+    environment:
+      - FILE_TO_SERVE=/data/file.txt
+    volumes:
+      # This line is changed to be dynamic
+      - ./${SOURCE_FILE:-test_file.txt}:/data/file.txt:ro

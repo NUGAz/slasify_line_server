@@ -1,32 +1,23 @@
 #!/bin/bash
-
-# Exit immediately if a command exits with a non-zero status.
 set -e
 
-# Check for the file argument
-if [ -z "$1" ]; then
-    echo "🚨 Error: Please provide the path to the file to be served."
-    echo "Usage: $0 <filepath>"
+# Use the first argument as the source file, or default to 'test_file.txt'
+export SOURCE_FILE=${1:-test_file.txt}
+
+# Check if the source file exists
+if [ ! -f "$SOURCE_FILE" ]; then
+    echo "🚨 Error: File not found at '$SOURCE_FILE'"
     exit 1
 fi
 
-FILE_TO_SERVE="$1"
+sudo systemctl is-active --quiet docker || {
+  echo "🚨 Docker service is not running. Please start it with 'sudo systemctl start docker'" >&2;
+  exit 1;
+}
 
-# Check if the file exists
-if [ ! -f "$FILE_TO_SERVE" ]; then
-    echo "🚨 Error: File not found at '$FILE_TO_SERVE'"
-    exit 1
-fi
+echo "🔥 Starting server for file: $SOURCE_FILE..."
+echo "👉 Access the API at http://localhost:8000/lines/<line_index>"
+echo "ℹ️  Press Ctrl+C to stop the server."
 
-# Activate the virtual environment if it exists
-if [ -d "venv" ]; then
-    source venv/bin/activate
-fi
-
-echo "🔥 Starting the server to serve lines from '$FILE_TO_SERVE'..."
-echo "👉 Access the API at http://127.0.0.1:8000/lines/<line_index>"
-
-# Export the filename as an environment variable and run the server
-# Uvicorn is a lightning-fast ASGI server, perfect for our needs.
-export FILE_TO_SERVE
-uvicorn line_server.main:app --host 0.0.0.0 --port 8000
+# Add the -E flag here to preserve the SOURCE_FILE variable
+sudo -E docker compose up --build
