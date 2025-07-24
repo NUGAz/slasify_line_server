@@ -11,7 +11,7 @@ FILE_PATH = os.environ.get("FILE_TO_SERVE")
 
 if not FILE_PATH or not os.path.exists(FILE_PATH):
     print(
-        f"🚨 FATAL ERROR: File not found at path specified by FILE_TO_SERVE.",
+        f"FATAL ERROR: File not found at path specified by FILE_TO_SERVE.",
         file=sys.stderr,
     )
     sys.exit(1)
@@ -39,7 +39,7 @@ class LineIndexer:
         Scans the file and records the starting byte offset of each line.
         This is a one-time cost at server startup.
         """
-        print(f"⏳ Indexing '{self.filepath}'. This may take a moment for large files...")
+        print(f"Indexing '{self.filepath}'. This may take a moment for large files...")
         start_time = time.time()
         # Open in binary mode ('rb') for accurate byte offsets with tell()
         with open(self.filepath, "rb") as f:
